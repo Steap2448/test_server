@@ -1,25 +1,26 @@
 #!/usr/bin/env tarantool
-assert(arg[1], 'Command is required')
+assert(arg[1], 'URL is required')
+assert(arg[2], 'Command is required')
 local http_client = require('http.client')
 local json = require('json')
 
 local function post()
-	assert(arg[2], 'Key is required')
-	assert(arg[3], 'Value is required')
-	local r = http_client.post('http://localhost:12345/kv', json.encode({key = arg[2], value = arg[3]}))
+	assert(arg[3], 'Key is required')
+	assert(arg[4], 'Value is required')
+	local r = http_client.post(arg[1]..'/kv', json.encode({key = arg[3], value = arg[4]}))
 	print(r.status)
 end
 
 local function put()
-	assert(arg[2], 'id is required')
-	assert(arg[3], 'Value is required')
-	local r = http_client.put('http://localhost:12345/kv/'..tostring(arg[2]), json.encode({value = arg[3]}))
+	assert(arg[3], 'id is required')
+	assert(arg[4], 'Value is required')
+	local r = http_client.put(arg[1]..'/kv/'..tostring(arg[3]), json.encode({value = arg[4]}))
 	print(r.status)
 end
 
 local function get()
-	assert(arg[2], 'id is required')
-	local r = http_client.get('http://localhost:12345/kv/'..tostring(arg[2]))
+	assert(arg[3], 'id is required')
+	local r = http_client.get(arg[1]..'/kv/'..tostring(arg[3]))
 	print(r.status)
 	if(r.status == 200) then 
 		print(r.body)
@@ -27,24 +28,24 @@ local function get()
 end
 
 local function delete()
-	assert(arg[2], 'id is required')
-	local r = http_client.delete('http://localhost:12345/kv/'..tostring(arg[2]))
+	assert(arg[3], 'id is required')
+	local r = http_client.delete(arg[1]..'/kv/'..tostring(arg[3]))
 	print(r.status)
 end
 
 
-if(arg[1] == 'GET') then
+if(arg[2] == 'GET') then
 	get()
 end
 
-if(arg[1] == 'POST') then
+if(arg[2] == 'POST') then
 	post()
 end
 
-if(arg[1] == 'PUT') then
+if(arg[2] == 'PUT') then
 	put()
 end
 
-if(arg[1] == 'DELETE') then
+if(arg[2] == 'DELETE') then
 	delete()
 end

@@ -14,6 +14,9 @@ function get_id_from_path(path)
     return res
 end
 
+assert(arg[1], "Require host")
+assert(arg[2], "Require port")
+
 box.cfg{
     log = 'server.log',
     pid_file = 'server.pid',
@@ -34,7 +37,7 @@ box.space.mainfold:create_index('primary', {
     if_not_exists = true;
 })
 
-local httpd = http_server.new('127.0.0.1', 12345, {
+local httpd = http_server.new(arg[1], tonumber(arg[2]), {
     log_requests = true,
     log_errors = true
 })
