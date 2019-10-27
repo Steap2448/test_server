@@ -24,8 +24,8 @@ box.cfg{
     background = true
 }
 
-if not box.space.mainfold then
-    box.schema.create_space('mainfold', {
+
+mainfold = box.schema.create_space('mainfold', {
         format = {
             {name = 'id';       type = 'string'},
             {name = 'data';     type = '*'},
@@ -37,9 +37,7 @@ if not box.space.mainfold then
         parts = {1, 'string'};
         if_not_exists = true;
     })
-end
 
-mainfold = box.space.mainfold
 
 local httpd = http_server.new(arg[1], tonumber(arg[2]), {
     log_requests = true,
@@ -48,7 +46,7 @@ local httpd = http_server.new(arg[1], tonumber(arg[2]), {
 
 local function get(req)
     local id = get_id_from_path(req:path())
-    local data = mainfold:get(id)
+    local data = box.space.mainfold:get(id)
 
     if (data == nil) then 
         local message = "GET: id \'%s\' doesn't exist"
@@ -82,7 +80,7 @@ local function post(req)
         return {status = 400, body = "Invalid body"}
     end
 
-    local data = mainfold:get(key)
+    local data = box.space.mainfold:get(key)
     if(data ~= nil) then
         local message = "POST: Key \'%s\' exists"
         log.warn(message:format(key))
@@ -91,7 +89,7 @@ local function post(req)
     end
 
     data = {key, value}
-    mainfold:insert{key, value}
+    box.space.mainfold:insert{key, value}
     
     local message = "POST: tuple with key \'%s\' has been posted"
     log.info(message:format(key))
@@ -119,7 +117,7 @@ local function put(req)
         return {status = 400, body = "Invalid body"}
     end
 
-    local data = mainfold:get(id)
+    local data = box.space.mainfold:get(id)
     if(data == nil) then
         local message = "PUT: id \'%s\'  doesn't exist"
         log.warn(message:format(id))
@@ -128,7 +126,7 @@ local function put(req)
     end
 
     data = {id, value}
-    mainfold:replace{id, value}
+    box.space.mainfold:replace{id, value}
     
     local message = "PUT: tuple with id \'%s\' has been updated"
     log.info(message:format(id))
@@ -139,7 +137,7 @@ end
 
 local function delete(req)
     local id = get_id_from_path(req:path())
-    local data = mainfold:delete(id)
+    local data = box.space.mainfold:delete(id)
     
     if (data == nil) then
         local message = "DELETE: id \'%s\'  doesn't exist"
