@@ -24,18 +24,22 @@ box.cfg{
     background = true
 }
 
-mainfold = box.schema.create_space('mainfold', {
-    format = {
-        {name = 'id';       type = 'string'},
-        {name = 'data';     type = '*'},
-    };
-    if_not_exists = true;
-})
+if not box.space.mainfold then
+    box.schema.create_space('mainfold', {
+        format = {
+            {name = 'id';       type = 'string'},
+            {name = 'data';     type = '*'},
+        };
+        if_not_exists = true;
+    })
 
-box.space.mainfold:create_index('primary', {
-    parts = {1, 'string'};
-    if_not_exists = true;
-})
+    box.space.mainfold:create_index('primary', {
+        parts = {1, 'string'};
+        if_not_exists = true;
+    })
+end
+
+mainfold = box.space.mainfold
 
 local httpd = http_server.new(arg[1], tonumber(arg[2]), {
     log_requests = true,
@@ -49,6 +53,7 @@ local function get(req)
     if (data == nil) then 
         local message = "GET: id \'%s\' doesn't exist"
         log.warn(message:format(id))
+        
         return {status = 404, body = json.encode("id doesn't exist")}
     end
 
@@ -63,6 +68,7 @@ local function post(req)
     if not pcall(function() body = json.decode(req:read()) end) then
         local message = "POST: Invalid body."
         log.warn(message)
+        
         return {status = 400, body = "Invalid body"}
     end
 
@@ -72,6 +78,7 @@ local function post(req)
     if (key == nil) or (value == nil) or (type(key) ~= 'string') then
         local message = "POST: Invalid body. Key: \'%s\'"
         log.warn(message:format(key))
+        
         return {status = 400, body = "Invalid body"}
     end
 
@@ -79,6 +86,7 @@ local function post(req)
     if(data ~= nil) then
         local message = "POST: Key \'%s\' exists"
         log.warn(message:format(key))
+        
         return {status = 409, body = "Key exists"}
     end
 
@@ -97,6 +105,7 @@ local function put(req)
     if not pcall(function() body = json.decode(req:read()) end) then
         local message = "PUT: Invalid body"
         log.warn(message)
+        
         return {status = 400, body = "Invalid body"}
     end
 
@@ -135,6 +144,7 @@ local function delete(req)
     if (data == nil) then
         local message = "DELETE: id \'%s\'  doesn't exist"
         log.warn(message:format(id)) 
+        
         return {status = 404, body = "id doesn't exist"}
     end
     
