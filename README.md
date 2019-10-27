@@ -9,12 +9,12 @@ This repository includes a server app (server.lua), which contains the most inte
 GET, POST, PUT and DELETE are implemented. Every action is logged in server.log.
 
 ## Usage
-server.lua <host> <port>
+server.lua \<host\> \<port\>
 
-POST: client.lua <url> POST <key> <data>
+POST: client.lua \<url\> POST \<key\> \<data\>
   
-PUT: client.lua <url> PUT <id> <data>
+PUT: client.lua \<url\> PUT \<id\> \<data\>
   
-GET: client.lua <url> GET <id>
+GET: client.lua \<url\> GET \<id\>
   
-DELETE: client.lua <url> DELETE <id>
+DELETE: client.lua \<url\> DELETE \<id\>
